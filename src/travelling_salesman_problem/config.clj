@@ -3,7 +3,7 @@
 (def sketch-size [800 400])
 
 (def colony-config
-  {:tour-count  100
+  {:tour-count  40
    :ant-count   200
    :alpha-coeff 1
    :beta-coeff  1.1
