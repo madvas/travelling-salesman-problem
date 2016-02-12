@@ -5,9 +5,9 @@
 
 (def ant-agents-timeout 5000)
 
-(defrecord Ant [current-path ant-key])
+(defrecord Ant [ant-key])
 
-(defrecord Tour [tour-key ants evap stored-history local-optimal-score])
+(defrecord Tour [tour-key ants])
 
 (defrecord Colony [best-route])
 
@@ -19,7 +19,7 @@
 
 (defn create-ants [n]
   (for [i (range n)
-        :let [ant (agent (->Ant nil i))]]
+        :let [ant (agent (->Ant i))]]
     (do (set-error-handler! ant agent-err-handler)
         ant)))
 
@@ -27,9 +27,7 @@
   (let [ant-cnt (:ant-count colony-config)]
     (for [i (range n)]
       (map->Tour {:tour-key            (inc i)
-                  :ants                (create-ants ant-cnt)
-                  :stored-history      (ref [])
-                  :local-optimal-score (ref 0)}))))
+                  :ants                (create-ants ant-cnt)}))))
 
 (defn create-colony []
   (map->Colony {:best-route (t/new-best-route)}))
@@ -112,7 +110,7 @@
   ;; 6) Adds pheremone deposits for this tour
   ;;
   ;; **Last 3 inputs to function are atoms
-  [_ waypoints best-route pher-map local-optimal-score pheremone-update]
+  [_ waypoints best-route pher-map pheremone-update]
   (let [path (make-path waypoints @pher-map)
         score (path-score path waypoints (:tour-coeff colony-config))
         path-offset (conj (subvec path 1) (first path))
@@ -122,8 +120,6 @@
         (alter best-route (constantly {:score    score
                                        :path     path
                                        :distance (format "%.2f" (t/get-route-distance path waypoints))})))
-      (when (> score @local-optimal-score)
-        (alter local-optimal-score (constantly score)))
       (dorun (map #(alter pheremone-update update-in [%] + score) edges-to-update)))))
 
 (defn tour-behave
@@ -134,7 +130,6 @@
                                    (:waypoints world)
                                    (:best-route colony)
                                    (:pher-map world)
-                                   (:local-optimal-score tour)
                                    (:pher-update world))
                         (:ants tour))]
 
