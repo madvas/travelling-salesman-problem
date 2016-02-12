@@ -11,9 +11,12 @@ In the app, you specify number of "tours" and number of "ants" (besides other co
 This is as far as I understand it, I'm no expert on Ant Colony Algorithms, if you know better, please let me know ;) 
 
 #### How to run?
-`lein run`\
-or\
-`lein uberjar`\
+`lein run`
+
+or
+
+`lein uberjar`
+
 `java -jar target/travelling-salesman-problem-0.1.0-standalone.jar`
 
 Feel free to use this code anyhow you want ;) 
